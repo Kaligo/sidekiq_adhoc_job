@@ -33,6 +33,7 @@ module SidekiqAdhocJob
 
     Sidekiq::Web.register(SidekiqAdhocJob::Web)
     Sidekiq::Web.tabs['adhoc_jobs'] = 'adhoc-jobs'
+    Sidekiq::Web.tabs['adhoc_jobs_v2'] = 'adhoc-jobs-v2'
     Sidekiq::Web.locales << File.expand_path('sidekiq_adhoc_job/web/locales', __dir__)
   end
 
@@ -81,14 +82,14 @@ module SidekiqAdhocJob
     end
 
     def strategy
-      @strategy ||= case strategy_name
-                    when :default
-                      SidekiqAdhocJob::Strategies::Default.new(module_names)
-                    else
-                      strategy_klass = SidekiqAdhocJob::Strategies.const_get(StringUtil.camelize(strategy_name.to_s).to_s)
-                      raise InvalidConfigurationError, "Invalid strategy name" unless strategy_klass
-                      strategy_klass.new(module_names)
-                    end
+      case strategy_name
+      when :default
+        SidekiqAdhocJob::Strategies::Default.new(module_names)
+      else
+        strategy_klass = SidekiqAdhocJob::Strategies.const_get(StringUtil.camelize(strategy_name.to_s).to_s)
+        raise InvalidConfigurationError, "Invalid strategy name" unless strategy_klass
+        strategy_klass.new(module_names)
+      end
     end
   end
 

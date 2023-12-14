@@ -1,0 +1,72 @@
+<h3><%= t('adhoc_jobs_v2') %></h3>
+
+<h4><%= SidekiqAdhocJob::Utils::String.classify(@presented_job.path_name) %></h4>
+
+<form method="POST" action="<%= root_path %>adhoc-jobs-v2/<%= CGI.escape(@presented_job.path_name) %>/schedule" id="adhoc-jobs-submit-form">
+  <input type="hidden" name="authenticity_token" value="<%= @csrf_token %>" />
+  <% if @presented_job.no_arguments? %>
+    <p>No job arguments</p>
+  <% else %>
+    <% @presented_job.required_args.each do |arg| %>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label" for="<%= arg %>">*<%= arg %>:</label>
+        <div class="col-sm-4">
+          <input class="form-control" type="text" name="<%= arg %>" id="<%= arg %>" required/>
+        </div>
+      </div>
+    <% end %>
+    <% @presented_job.optional_args.each do |arg| %>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label" for="<%= arg %>"><%= arg %>:</label>
+        <div class="col-sm-4">
+          <input class="form-control" type="text" name="<%= arg %>" id="<%= arg %>"/>
+        </div>
+      </div>
+    <% end %>
+    <% @presented_job.required_kw_args.each do |arg| %>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label" for="<%= arg %>"><%= arg %>:</label>
+        <div class="col-sm-4">
+          <input class="form-control" type="text" name="<%= arg %>" id="<%= arg %>" required/>
+        </div>
+      </div>
+    <% end %>
+    <% @presented_job.optional_kw_args.each do |arg| %>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label" for="<%= arg %>"><%= arg %>:</label>
+        <div class="col-sm-4">
+          <input class="form-control" type="text" name="<%= arg %>" id="<%= arg %>"/>
+        </div>
+      </div>
+    <% end %>
+    <% if @presented_job.has_rest_args %>
+      <div class="form-group row">
+        <label class="col-sm-2 col-form-label" for="rest_args">Rest arguments (please provide a json string representing the arguments):</label>
+        <div class="col-sm-4">
+          <input class="form-control" type="text" name="rest_args" id="rest_args"/>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+  <div class="form-group row">
+    <div class="col-sm-4">
+      <button type="submit" class="btn btn-danger"><%= t('adhoc_jobs_run_job') %></button>
+      <a class="btn" href="<%= root_path %>adhoc-jobs"><%= t('adhoc_jobs_go_back') %></a>
+    </div>
+  </div>
+</form>
+
+<% if @presented_job.require_confirm %>
+  <script>
+    document.getElementById('adhoc-jobs-submit-form').addEventListener('submit', (event) => {
+      const confirmPrompt = "<%= @presented_job.confirm_prompt_message %>";
+      const input = prompt(`Please enter "${confirmPrompt}" to confirm`);
+      if (input !== confirmPrompt) {
+        event.preventDefault();
+        if (input !== null) {
+          alert('Your confirmation input is incorrect, try again.');
+        }
+      }
+    })
+  </script>
+<% end %>
