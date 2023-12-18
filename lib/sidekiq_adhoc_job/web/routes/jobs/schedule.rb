@@ -5,6 +5,13 @@ module SidekiqAdhocJob
 
         def self.register(app)
           app.post '/adhoc-jobs/:name/schedule' do
+            SidekiqAdhocJob.config.strategy_name = :rails_application_job
+            SidekiqAdhocJob::WorkerClassesLoader.load(
+              SidekiqAdhocJob.config.module_names,
+              load_paths: SidekiqAdhocJob.config.load_paths,
+              strategy: SidekiqAdhocJob.config.strategy
+            )
+
             SidekiqAdhocJob::ScheduleAdhocJob.new(params[:name], request.params).call
             redirect "#{root_path}adhoc-jobs"
           end

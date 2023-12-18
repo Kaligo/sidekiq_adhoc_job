@@ -5,6 +5,13 @@ module SidekiqAdhocJob
 
         def self.register(app)
           app.get '/adhoc-jobs/:name' do
+            SidekiqAdhocJob.config.strategy_name = :rails_application_job
+            SidekiqAdhocJob::WorkerClassesLoader.load(
+              SidekiqAdhocJob.config.module_names,
+              load_paths: SidekiqAdhocJob.config.load_paths,
+              strategy: SidekiqAdhocJob.config.strategy
+            )
+
             @csrf_token = env['rack.session'][:csrf]
             @presented_job = SidekiqAdhocJob::Web::JobPresenter.find(params[:name])
             if @presented_job

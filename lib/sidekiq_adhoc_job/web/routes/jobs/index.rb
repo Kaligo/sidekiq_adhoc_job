@@ -4,6 +4,13 @@ module SidekiqAdhocJob
       class Index
         def self.register(app)
           app.get '/adhoc-jobs' do
+            SidekiqAdhocJob.config.strategy_name = :rails_application_job
+            SidekiqAdhocJob::WorkerClassesLoader.load(
+              SidekiqAdhocJob.config.module_names,
+              load_paths: SidekiqAdhocJob.config.load_paths,
+              strategy: SidekiqAdhocJob.config.strategy
+            )
+
             @presented_jobs = SidekiqAdhocJob::Web::JobPresenter.build_collection.sort_by { |j| j.name.to_s }
 
             erb File.read(File.join(VIEW_PATH, 'jobs/index.html.erb'))
