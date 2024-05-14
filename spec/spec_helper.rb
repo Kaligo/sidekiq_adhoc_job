@@ -46,27 +46,6 @@ RSpec.configure do |config|
     mocks.verify_partial_doubles = true
   end
 
-  # mock_redis setup
-  config.before do
-    require 'mock_redis'
-    require 'sidekiq/redis_connection'
-
-    redis = MockRedis.new
-
-    connection = {
-      location: '127.0.0.1:6379',
-      db: '0'
-    }
-
-    redis.define_singleton_method(:connection) { connection }
-
-    allow(Sidekiq::RedisConnection).to receive(:create).and_return(ConnectionPool.new({}) {
-      redis
-    })
-    allow(Sidekiq).to receive(:redis) do |&block|
-      block.call(redis)
-    end
-  end
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
 =begin
