@@ -8,10 +8,19 @@ RSpec.describe SidekiqAdhocJob::Utils::ClassInspector do
   describe "#parameters" do
     it do
       expect(inspector.parameters(:perform)).to eq({
-        key: [:dryrun],
-        keyreq: [:type],
-        opt: [:retry_job, :retries, :interval, :name, :options],
-        req: [:id, :overwrite]
+        key: [{ key: :dryrun, default: nil }],
+        keyreq: [{ key: :type, default: nil }],
+        opt: [
+          { key: :retry_job, default: nil },
+          { key: :retries, default: nil },
+          { key: :interval, default: nil },
+          { key: :name, default: nil },
+          { key: :options, default: nil }
+        ],
+        req: [
+          { key: :id, default: nil },
+          { key: :overwrite, default: nil }
+        ]
       })
     end
   end

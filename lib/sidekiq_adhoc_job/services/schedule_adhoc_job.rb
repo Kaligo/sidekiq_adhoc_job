@@ -23,9 +23,10 @@ module SidekiqAdhocJob
     attr_reader :request_params, :worker_klass, :worker_klass_inspector, :worker_positional_params, :worker_keyword_params
 
     def parse_params
-      @worker_positional_params = positional_params
-        .reject { |key| request_params[key].empty? }
-        .map { |key| StringUtil.parse(request_params[key], symbolize: true) }
+      @worker_positional_params = positional_params.map do |param|
+        value = request_params[param[:key]]
+        value.empty? ? param[:default] : StringUtil.parse(value, symbolize: true)
+      end
       @worker_keyword_params = keyword_params
         .each_with_object({}) { |key, obj| obj[key.to_sym] = request_params[key] }
         .compact

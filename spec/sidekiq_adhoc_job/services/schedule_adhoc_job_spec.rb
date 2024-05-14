@@ -35,6 +35,22 @@ RSpec.describe SidekiqAdhocJob::ScheduleAdhocJob do
       expect(SidekiqAdhocJob::Test::DummyWorker).to receive(:perform_async).with(*expected_params, **expected_kw_params)
       scheduler.call
     end
+
+    it 'allows skipping optional middle args' do
+      params = {
+        'id' => SecureRandom.uuid,
+        'retry_job' => '',
+        'abc' => '',
+        'xyz' => '',
+        'bce' => '',
+        'no_of_retries' => '6'
+      }
+      scheduler = subject.new('sidekiq_adhoc_job_test_simple_dummy_worker', params)
+
+      expect(SidekiqAdhocJob::Test::SimpleDummyWorker).to receive(:perform_async).with(
+        params['id'], true, 'afif', [], { 'test' => 'test' }, 6)
+      scheduler.call
+    end
   end
 
 end

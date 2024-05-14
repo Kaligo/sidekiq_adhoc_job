@@ -1,3 +1,5 @@
+require 'method_source'
+
 module SidekiqAdhocJob
   module Utils
     class ClassInspector
@@ -13,12 +15,22 @@ module SidekiqAdhocJob
       def parameters(method_name)
         return method_parameters[method_name] if method_parameters[method_name]
 
-        klass_method = klass_method(klass_obj.method(method_name))
+        method_object = klass_obj.method(method_name)
+        klass_method = klass_method(method_object)
+        # Get the source code of the method
+        source = method_object.source
         params = klass_method
                  .parameters
                  .group_by { |type, _| type }
                  .inject({}) do |acc, (type, params)|
-                   acc[type] = params.map(&:last)
+                   if type == :opt
+                     acc[type] = params.map do |param|
+                       default_value = eval(source[/#{param.last} ?= ?(.+?)(,|\))/, 1])
+                        { key: param.last, default: default_value }
+                     end
+                   else
+                     acc[type] = params.map { |param| { key: param.last, default: nil } }
+                   end
                    acc
                  end
 
