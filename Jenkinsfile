@@ -29,23 +29,28 @@ pipeline {
     stage("Test") {
       environment {
         BUNDLE_PATH       = "/build/vendor/bundle"
+        REDIS_URL         = "redis://redis-${env.BUILD_NUMBER}:6379/1"
       }
       steps {
         script {
           ruby_bundler_versions.each { versions ->
             def ruby_version = versions[0]
             def bundler_version = versions[1]
-            docker.image("ruby:${ruby_version}-alpine")
-              .inside("-u root --link -v bundle_cache_gem_tests:${env.BUNDLE_PATH} -v logs_gem_tests:${env.WORKSPACE}/log") {
-                stage("Prepare test env (ruby ${ruby_version})") {
-                  sh "apk --update --no-cache add build-base git libsodium-dev --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing"
-                  sh "gem install bundler:${bundler_version}"
-                  sh 'bundle install --jobs=4 --retry=3'
-                }
-                stage("Run rspec (ruby ${ruby_version})") {
-                  sh 'bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml'
-                }
-              } // end inside
+            docker.image('redis').withRun() { c_redis ->
+              docker.image("ruby:${ruby_version}-alpine")
+                .inside("-u root --link ${c_redis.id}:redis-${env.BUILD_NUMBER} -v bundle_cache_gem_tests:${env.BUNDLE_PATH} -v logs_gem_tests:${env.WORKSPACE}/log") {
+                  stage("Prepare test env (ruby ${ruby_version})") {
+                    sh "apk --update --no-cache add build-base git libsodium-dev --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing"
+                    sh "apk --update add dockerize --repository=https://dl-cdn.alpinelinux.org/alpine/edge/testing --allow-untrusted"
+                    sh "gem install bundler:${bundler_version}"
+                    sh 'bundle install --jobs=4 --retry=3'
+                    sh "dockerize -wait tcp://redis-${env.BUILD_NUMBER}:6379 -timeout 1m"
+                  }
+                  stage("Run rspec (ruby ${ruby_version})") {
+                    sh 'bundle exec rspec --format progress --format RspecJunitFormatter --out rspec.xml'
+                  }
+                } // end inside
+            } // end docker redis
           } // end ruby_bundler_versions.each
         } // end script
       } // end steps
