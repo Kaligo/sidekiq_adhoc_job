@@ -86,9 +86,3 @@ If you're using sidekiq adhoc jobs in Production, you may want to consider using
 To use this feature, add the worker class name of the jobs you would like to add the confirmation for into the `require_confirm_worker_names` option.
 
 The challenge keyword is set to be `confirm` as default, if you would like to configure the challenge keyword, you can use the `require_confirm_prompt_message` option.
-
-## Contributing
-
-To run the test suite:
-1. Ensure Redis is running at `localhost:6379`.
-2. Run `bundle exec rspec`.
