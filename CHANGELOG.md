@@ -1,4 +1,6 @@
 # Change Log
+## 2.2.4
+- Move in-line JavaScript from .erb files to separate JavaScript files.
 
 ## 2.2.3
 
