@@ -38,11 +38,11 @@ module SidekiqAdhocJob
     assets_path = File.expand_path('sidekiq_adhoc_job/web/assets', __dir__)
 
     Sidekiq::Web.use Rack::Static, urls: ['/javascript'],
-                               root: assets_path,
-                               cascade: true,
-                               header_rules: [[:all, { 'cache-control' => 'private, max-age=86400' }]]
+                                   root: assets_path,
+                                   cascade: true,
+                                   header_rules: [[:all, { 'cache-control' => 'private, max-age=86400' }]]
 
-  end
+end
 
   def self.strategies
     @_strategies ||= []
