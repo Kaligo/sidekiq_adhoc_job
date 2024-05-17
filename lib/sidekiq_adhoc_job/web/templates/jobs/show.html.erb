@@ -19,7 +19,7 @@
       <div class="form-group row">
         <label class="col-sm-2 col-form-label" for="<%= arg %>"><%= arg %>:</label>
         <div class="col-sm-4">
-          <input class="form-control" type="text" name="<%= arg %>" id="<%= arg %>"/>
+          <input class="form-control optional" type="text" name="<%= arg %>" id="<%= arg %>"/>
         </div>
       </div>
     <% end %>
@@ -55,6 +55,9 @@
     </div>
   </div>
 </form>
+
+<script type="text/javascript" src="<%= root_path %>javascript/check_opt_params.js">
+</script>
 
 <% if @presented_job.require_confirm %>
   <div id="presented-job" data-confirm-prompt="<%= @presented_job.confirm_prompt_message %>">

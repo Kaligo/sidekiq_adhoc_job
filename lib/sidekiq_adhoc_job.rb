@@ -42,7 +42,7 @@ module SidekiqAdhocJob
                                    cascade: true,
                                    header_rules: [[:all, { 'cache-control' => 'private, max-age=86400' }]]
 
-  end
+end
 
   def self.strategies
     @_strategies ||= []
