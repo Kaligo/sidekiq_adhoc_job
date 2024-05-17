@@ -34,6 +34,14 @@ module SidekiqAdhocJob
     Sidekiq::Web.register(SidekiqAdhocJob::Web)
     Sidekiq::Web.tabs['adhoc_jobs'] = 'adhoc-jobs'
     Sidekiq::Web.locales << File.expand_path('sidekiq_adhoc_job/web/locales', __dir__)
+
+    assets_path = File.expand_path('sidekiq_adhoc_job/web/assets', __dir__)
+
+    Sidekiq::Web.use Rack::Static, urls: ['/javascript'],
+                                   root: assets_path,
+                                   cascade: true,
+                                   header_rules: [[:all, { 'cache-control' => 'private, max-age=86400' }]]
+
   end
 
   def self.strategies
