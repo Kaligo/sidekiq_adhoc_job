@@ -1,4 +1,7 @@
 # Change Log
+## 2.3.0
+- Add alert and prevent job run when user leaves optional params empty in between other non-empty optional params.
+
 ## 2.2.4
 - Move in-line JavaScript from .erb files to separate JavaScript files.
 
