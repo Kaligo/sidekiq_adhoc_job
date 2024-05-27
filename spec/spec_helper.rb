@@ -49,23 +49,19 @@ RSpec.configure do |config|
   # mock_redis setup
   config.before do
     require 'mock_redis'
-    require 'sidekiq/redis_connection'
+    require 'sidekiq'
 
-    redis = MockRedis.new
+    mock_redis = MockRedis.new
+    mock_redis.define_singleton_method(:config) { OpenStruct.new(server_url: 'redis://localhost:6379') }
 
-    connection = {
-      location: '127.0.0.1:6379',
-      db: '0'
-    }
-
-    redis.define_singleton_method(:connection) { connection }
-
-    allow(Sidekiq::RedisConnection).to receive(:create).and_return(ConnectionPool.new({}) {
-      redis
-    })
-    allow(Sidekiq).to receive(:redis) do |&block|
-      block.call(redis)
-    end
+    # sscan in redis-client used by sidekiq allows calling with only the key
+    # We intercept such calls to sscan and default the cursor to 0 when calling sscan in MockRedis
+    #
+    # See: https://github.com/sidekiq/sidekiq/blob/dddf20b/lib/sidekiq/api.rb#L70
+    # See: https://github.com/redis-rb/redis-client/blob/a2f16fc/lib/redis_client.rb#L384
+    # See: https://github.com/sds/mock_redis/blob/640f19c/lib/mock_redis/set_methods.rb#L145-L147
+    allow(mock_redis).to receive(:sscan) { |key| mock_redis.common_scan(mock_redis.smembers(key), 0)[1] }
+    allow(Sidekiq).to receive(:redis).and_yield(mock_redis)
   end
 # The settings below are suggested to provide a good initial experience
 # with RSpec, but feel free to customize to your heart's content.
