@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../../lib/sidekiq_adhoc_job/web'
 
 RSpec.describe SidekiqAdhocJob::Web do
@@ -16,5 +18,4 @@ RSpec.describe SidekiqAdhocJob::Web do
       subject.registered(app)
     end
   end
-
 end

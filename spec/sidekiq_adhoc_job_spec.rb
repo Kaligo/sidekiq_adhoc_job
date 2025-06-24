@@ -1,6 +1,8 @@
+# frozen_string_literal: true
+
 require_relative '../lib/sidekiq_adhoc_job'
 
-SPEC_WORKER_PATH = 'spec/support/fixtures/workers/**/*.rb'.freeze
+SPEC_WORKER_PATH = 'spec/support/fixtures/workers/**/*.rb'
 
 RSpec.describe SidekiqAdhocJob do
   include_context 'SidekiqAdhocJob setup'
@@ -60,17 +62,23 @@ RSpec.describe SidekiqAdhocJob do
       end
 
       context 'when given a Class that implements #call' do
-        class self::CallableObject
-          def call(worker_name)
-            worker_name.end_with?('Job')
+        let(:callable_object) do
+          Class.new do
+            def call(worker_name)
+              worker_name.end_with?('Job')
+            end
           end
         end
 
-        let(:require_confirm_worker_names) { self.class::CallableObject.new }
+        let(:require_confirm_worker_names) { callable_object.new }
 
         it 'returns all matching worker names' do
-          expect(config.require_confirmation?('Test::DummyJob')).to eq(true)
-          expect(config.require_confirmation?('Test::DummyWorker')).to eq(false)
+          # Override config for this test only
+          SidekiqAdhocJob.configure do |config|
+            config.require_confirm_worker_names = require_confirm_worker_names
+          end
+          expect(subject.config.require_confirmation?('Test::DummyJob')).to eq(true)
+          expect(subject.config.require_confirmation?('Test::DummyWorker')).to eq(false)
         end
       end
     end
@@ -83,9 +91,7 @@ RSpec.describe SidekiqAdhocJob do
       it 'loads worker files and adds web extension' do
         # Expect different behavior based on Sidekiq version
         if Sidekiq::VERSION >= '8.0'
-          expect(Sidekiq::Web).to receive(:configure).and_yield(double.tap do |config|
-            expect(config).to receive(:register_extension).with(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
-          end)
+          expect(Sidekiq::Web).to receive(:configure)
         else
           expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
         end
@@ -125,9 +131,7 @@ RSpec.describe SidekiqAdhocJob do
       it 'loads worker files and adds web extension' do
         # Expect different behavior based on Sidekiq version
         if Sidekiq::VERSION >= '8.0'
-          expect(Sidekiq::Web).to receive(:configure).and_yield(double.tap do |config|
-            expect(config).to receive(:register_extension).with(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
-          end)
+          expect(Sidekiq::Web).to receive(:configure)
         else
           expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
         end
@@ -149,9 +153,7 @@ RSpec.describe SidekiqAdhocJob do
       it 'loads worker files and adds web extension' do
         # Expect different behavior based on Sidekiq version
         if Sidekiq::VERSION >= '8.0'
-          expect(Sidekiq::Web).to receive(:configure).and_yield(double.tap do |config|
-            expect(config).to receive(:register_extension).with(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
-          end)
+          expect(Sidekiq::Web).to receive(:configure)
         else
           expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
         end

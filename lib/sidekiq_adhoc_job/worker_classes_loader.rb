@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 module SidekiqAdhocJob
   class WorkerClassesLoader
     @_worker_klasses = {}
 
-    def self.load(module_names, strategy:, load_paths:)
+    def self.load(_module_names, strategy:, load_paths:)
       require_files(load_paths)
       strategy.load
       @_worker_klasses = strategy.worker_klasses
@@ -17,7 +19,7 @@ module SidekiqAdhocJob
     end
 
     def self.require_files(load_paths)
-      Dir[File.join("", load_paths)].each { |path| require path } unless load_paths.empty?
+      Dir[File.join('', load_paths)].each { |path| require path } unless load_paths.empty?
     end
   end
 end

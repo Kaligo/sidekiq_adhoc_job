@@ -1,13 +1,11 @@
+# frozen_string_literal: true
+
 module SidekiqAdhocJob
   class ScheduleAdhocJob
-
     StringUtil ||= ::SidekiqAdhocJob::Utils::String
 
     def initialize(job_name, request_params)
-      @request_params = request_params.inject({}) do |acc, (k, v)|
-        acc[k.to_sym] = v
-        acc
-      end
+      @request_params = request_params.transform_keys(&:to_sym)
       @worker_klass = WorkerClassesLoader.find_worker_klass(job_name)
       @worker_klass_inspector = Utils::ClassInspector.new(worker_klass)
 
@@ -20,18 +18,19 @@ module SidekiqAdhocJob
 
     private
 
-    attr_reader :request_params, :worker_klass, :worker_klass_inspector, :worker_positional_params, :worker_keyword_params
+    attr_reader :request_params, :worker_klass, :worker_klass_inspector, :worker_positional_params,
+                :worker_keyword_params
 
     def parse_params
       @worker_positional_params = positional_params
-        .reject { |key| request_params[key].empty? }
-        .map { |key| StringUtil.parse(request_params[key], symbolize: true) }
+                                  .reject { |key| request_params[key].empty? }
+                                  .map { |key| StringUtil.parse(request_params[key], symbolize: true) }
       @worker_keyword_params = keyword_params
-        .each_with_object({}) { |key, obj| obj[key.to_sym] = request_params[key] }
-        .compact
-      if !!request_params[:rest_args] && !request_params[:rest_args].empty?
-        @worker_positional_params << StringUtil.parse_json(request_params[:rest_args].strip, symbolize: true)
-      end
+                               .each_with_object({}) { |key, obj| obj[key.to_sym] = request_params[key] }
+                               .compact
+      return unless !request_params[:rest_args].nil? && !request_params[:rest_args].empty?
+
+      @worker_positional_params << StringUtil.parse_json(request_params[:rest_args].strip, symbolize: true)
     end
 
     def allowed_params
@@ -47,6 +46,5 @@ module SidekiqAdhocJob
       worker_klass_inspector.required_kw_parameters(:perform) +
         worker_klass_inspector.optional_kw_parameters(:perform)
     end
-
   end
 end

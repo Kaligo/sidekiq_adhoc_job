@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq'
 
 module SidekiqAdhocJob
@@ -10,8 +12,7 @@ module SidekiqAdhocJob
     end
 
     module ParentArgs
-      def perform(*args)
-      end
+      def perform(*args); end
     end
 
     class PrependedAndInheritedWorker
@@ -21,9 +22,7 @@ module SidekiqAdhocJob
 
       sidekiq_options queue: 'dummy'
 
-      def perform(id, overwrite, retry_job = true, retries = 5, interval = 1.5)
-      end
-
+      def perform(id, overwrite, retry_job = true, retries = 5, interval = 1.5); end
     end
   end
 end

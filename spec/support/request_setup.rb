@@ -1,9 +1,12 @@
+# frozen_string_literal: true
+
+require 'English'
 require 'base64'
 require 'sidekiq/web'
 
 RSpec.shared_context 'request setup' do
   def compact_html(html)
-    html.gsub(/\n\s*\</, '<').gsub(/\n\s*(?<word>\w+)/) { $~[:word] }.strip
+    html.gsub(/\n\s*</, '<').gsub(/\n\s*(?<word>\w+)/) { $LAST_MATCH_INFO[:word] }.strip
   end
 
   def disable_csrf

@@ -1,16 +1,17 @@
+# frozen_string_literal: true
+
 # References: https://github.com/hanami/utils/blob/master/lib/hanami/utils/string.rb
 #             https://github.com/omniauth/omniauth/blob/cc0f5522621b4a372f4dff0aa608822aa082cb60/lib/omniauth.rb#L156
 module SidekiqAdhocJob
   module Utils
     class String
-
-      EMPTY_STRING               ||= ''.freeze
-      CLASSIFY_SEPARATOR         ||= '_'.freeze
-      NAMESPACE_SEPARATOR        ||= '::'.freeze
-      UNDERSCORE_SEPARATOR       ||= '/'.freeze
-      UNDERSCORE_DIVISION_TARGET ||= '\1_\2'.freeze
-      DASHERIZE_SEPARATOR        ||= '-'.freeze
-      CLASSIFY_WORD_SEPARATOR    ||= /#{CLASSIFY_SEPARATOR}|#{NAMESPACE_SEPARATOR}|#{UNDERSCORE_SEPARATOR}|#{DASHERIZE_SEPARATOR}/.freeze
+      EMPTY_STRING               ||= ''
+      CLASSIFY_SEPARATOR         ||= '_'
+      NAMESPACE_SEPARATOR        ||= '::'
+      UNDERSCORE_SEPARATOR       ||= '/'
+      UNDERSCORE_DIVISION_TARGET ||= '\1_\2'
+      DASHERIZE_SEPARATOR        ||= '-'
+      CLASSIFY_WORD_SEPARATOR    ||= /#{CLASSIFY_SEPARATOR}|#{NAMESPACE_SEPARATOR}|#{UNDERSCORE_SEPARATOR}|#{DASHERIZE_SEPARATOR}/
 
       # Return a CamelCase version of the string
       # If the given string is a file name, it will convert each file directory into a CamelCase namespace
@@ -61,7 +62,7 @@ module SidekiqAdhocJob
         string.gsub!(NAMESPACE_SEPARATOR, UNDERSCORE_SEPARATOR)
         string.gsub!(/([A-Z\d]+)([A-Z][a-z])/, UNDERSCORE_DIVISION_TARGET)
         string.gsub!(/([a-z\d])([A-Z])/, UNDERSCORE_DIVISION_TARGET)
-        string.gsub!(/[[:space:]]|\-/, UNDERSCORE_DIVISION_TARGET)
+        string.gsub!(/[[:space:]]|-/, UNDERSCORE_DIVISION_TARGET)
         string.downcase
       end
 
@@ -78,9 +79,11 @@ module SidekiqAdhocJob
 
       def self.camelize(word, first_letter_in_uppercase = true)
         if first_letter_in_uppercase
-          word.to_s.gsub(%r{/(.?)}) { '::' + Regexp.last_match[1].upcase }.gsub(/(^|_)(.)/) { Regexp.last_match[2].upcase }
+          word.to_s.gsub(%r{/(.?)}) do
+            "::#{Regexp.last_match[1].upcase}"
+          end.gsub(/(^|_)(.)/) { Regexp.last_match[2].upcase }
         else
-          word.first + self.camelize(word)[1..-1]
+          word.first + camelize(word)[1..]
         end
       end
 
@@ -121,7 +124,6 @@ module SidekiqAdhocJob
       rescue JSON::ParserError => _e
         nil
       end
-
     end
   end
 end

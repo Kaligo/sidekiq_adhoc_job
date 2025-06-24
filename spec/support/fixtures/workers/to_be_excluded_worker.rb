@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq'
 
 module SidekiqAdhocJob
@@ -6,8 +8,6 @@ module SidekiqAdhocJob
 
     sidekiq_options queue: 'dummy'
 
-    def perform
-    end
-
+    def perform; end
   end
 end

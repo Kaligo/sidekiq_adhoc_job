@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # References: https://github.com/moove-it/sidekiq-scheduler/blob/master/lib/sidekiq-scheduler/job_presenter.rb
 module SidekiqAdhocJob
   module Web
@@ -26,7 +28,7 @@ module SidekiqAdhocJob
         @optional_args = args[:opt] || []
         @required_kw_args = args[:keyreq] || []
         @optional_kw_args = args[:key] || []
-        @has_rest_args = !!args[:rest]
+        @has_rest_args = !args[:rest].nil?
         @require_confirm = require_confirm
         @confirm_prompt_message = SidekiqAdhocJob.config.require_confirm_prompt_message
       end
@@ -60,7 +62,6 @@ module SidekiqAdhocJob
       def no_arguments?
         required_args.empty? && optional_args.empty? && required_kw_args.empty? && optional_kw_args.empty? && !has_rest_args
       end
-
     end
   end
 end
