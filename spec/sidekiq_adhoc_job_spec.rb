@@ -81,7 +81,14 @@ RSpec.describe SidekiqAdhocJob do
       let(:module_names) { %i[SidekiqAdhocJob::Test SidekiqAdhocJob::OtherTest SidekiqAdhocJob::Test::Worker] }
 
       it 'loads worker files and adds web extension' do
-        expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
+        # Expect different behavior based on Sidekiq version
+        if Sidekiq::VERSION >= '8.0'
+          expect(Sidekiq::Web).to receive(:configure).and_yield(double.tap do |config|
+            expect(config).to receive(:register_extension).with(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
+          end)
+        else
+          expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
+        end
 
         subject.init
 
@@ -116,7 +123,14 @@ RSpec.describe SidekiqAdhocJob do
       let(:strategy_name) { :active_job }
 
       it 'loads worker files and adds web extension' do
-        expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
+        # Expect different behavior based on Sidekiq version
+        if Sidekiq::VERSION >= '8.0'
+          expect(Sidekiq::Web).to receive(:configure).and_yield(double.tap do |config|
+            expect(config).to receive(:register_extension).with(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
+          end)
+        else
+          expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
+        end
 
         subject.init
 
@@ -133,7 +147,14 @@ RSpec.describe SidekiqAdhocJob do
       let(:strategy_name) { :rails_application_job }
 
       it 'loads worker files and adds web extension' do
-        expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
+        # Expect different behavior based on Sidekiq version
+        if Sidekiq::VERSION >= '8.0'
+          expect(Sidekiq::Web).to receive(:configure).and_yield(double.tap do |config|
+            expect(config).to receive(:register_extension).with(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
+          end)
+        else
+          expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
+        end
 
         subject.init
 

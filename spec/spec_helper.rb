@@ -1,6 +1,7 @@
 # Require this file for unit tests
 Dir[File.join(File.expand_path('support', __dir__), '**/*.rb')].each { |file_name| require_relative file_name }
 
+require 'ostruct'
 require 'sidekiq'
 require 'sidekiq/web'
 

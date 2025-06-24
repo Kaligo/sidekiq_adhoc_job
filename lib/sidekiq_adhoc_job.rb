@@ -31,8 +31,17 @@ module SidekiqAdhocJob
   def self.init
     SidekiqAdhocJob::WorkerClassesLoader.load(@_config.module_names, load_paths: @_config.load_paths, strategy: @_config.strategy)
 
-    Sidekiq::Web.register(SidekiqAdhocJob::Web)
-    Sidekiq::Web.tabs['adhoc_jobs'] = 'adhoc-jobs'
+    # Check if we're using Sidekiq 8+ which requires the new API
+    if Sidekiq::VERSION >= '8.0'
+      Sidekiq::Web.configure do |config|
+        config.register_extension(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
+      end
+    else
+      # Legacy API for Sidekiq 7.x
+      Sidekiq::Web.register(SidekiqAdhocJob::Web)
+      Sidekiq::Web.tabs['adhoc_jobs'] = 'adhoc-jobs'
+    end
+
     Sidekiq::Web.locales << File.expand_path('sidekiq_adhoc_job/web/locales', __dir__)
 
     assets_path = File.expand_path('sidekiq_adhoc_job/web/assets', __dir__)
