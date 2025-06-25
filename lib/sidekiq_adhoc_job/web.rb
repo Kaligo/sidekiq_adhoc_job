@@ -6,7 +6,7 @@ ROUTE_PATH ||= File.expand_path('web/routes', __dir__)
 
 module SidekiqAdhocJob
   module Web
-    VIEW_PATH  ||= File.expand_path('web/views', __dir__)
+    VIEW_PATH  ||= File.expand_path('web/templates', __dir__)
 
     StringUtil ||= ::SidekiqAdhocJob::Utils::String
 
