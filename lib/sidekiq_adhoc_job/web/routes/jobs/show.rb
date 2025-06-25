@@ -9,10 +9,10 @@ module SidekiqAdhocJob
             @csrf_token = env['rack.session'][:csrf]
 
             # Use Sidekiq 8's new API if available, fallback to legacy for Sidekiq 7
-            name = if respond_to?(:route_params)
-                     route_params(:name)
+            name = if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('8.0.0')
+                     route_params[:name]
                    else
-                     params[:name]
+                     params['name']
                    end
 
             @presented_job = SidekiqAdhocJob::Web::JobPresenter.find(name)
