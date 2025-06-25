@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq'
 require 'sidekiq_adhoc_job/utils/string'
 
@@ -34,9 +36,7 @@ module SidekiqAdhocJob
 
       sidekiq_options queue: 'dummy'
 
-      def perform(id, overwrite, retry_job = true, retries = 5, interval = 1.5)
-      end
-
+      def perform(id, overwrite, retry_job = true, retries = 5, interval = 1.5); end
     end
   end
 end

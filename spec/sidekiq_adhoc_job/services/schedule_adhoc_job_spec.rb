@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../../../lib/sidekiq_adhoc_job/services/schedule_adhoc_job'
 
 RSpec.describe SidekiqAdhocJob::ScheduleAdhocJob do
@@ -25,7 +27,7 @@ RSpec.describe SidekiqAdhocJob::ScheduleAdhocJob do
     end
     let(:expected_kw_params) do
       {
-        :type => 'foo'
+        type: 'foo'
       }
     end
 
@@ -36,5 +38,4 @@ RSpec.describe SidekiqAdhocJob::ScheduleAdhocJob do
       scheduler.call
     end
   end
-
 end

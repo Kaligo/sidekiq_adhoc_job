@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module SidekiqAdhocJob
   module Strategies
     class RailsApplicationJob

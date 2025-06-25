@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pathname'
 
 ROUTE_PATH ||= File.expand_path('web/routes', __dir__)
@@ -17,7 +19,6 @@ module SidekiqAdhocJob
         namespaced_klass_name.register(app)
       end
     end
-
   end
 end
 

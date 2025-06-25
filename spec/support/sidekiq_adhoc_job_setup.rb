@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative '../../lib/sidekiq_adhoc_job'
 
 RSpec.shared_context 'SidekiqAdhocJob setup' do

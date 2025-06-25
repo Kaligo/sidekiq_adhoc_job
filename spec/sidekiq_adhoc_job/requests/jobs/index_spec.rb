@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rack/test'
 require_relative '../../../../lib/sidekiq_adhoc_job/web/routes/jobs/index'
 
@@ -37,5 +39,4 @@ RSpec.describe 'GET /adhoc_jobs' do
       )
     )
   end
-
 end

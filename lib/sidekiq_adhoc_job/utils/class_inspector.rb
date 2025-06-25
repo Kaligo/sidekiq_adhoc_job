@@ -1,7 +1,8 @@
+# frozen_string_literal: true
+
 module SidekiqAdhocJob
   module Utils
     class ClassInspector
-
       attr_reader :klass_name, :klass_obj, :method_parameters
 
       def initialize(klass_name)
@@ -17,9 +18,8 @@ module SidekiqAdhocJob
         params = klass_method
                  .parameters
                  .group_by { |type, _| type }
-                 .inject({}) do |acc, (type, params)|
-                   acc[type] = params.map(&:last)
-                   acc
+                 .transform_values do |params|
+                   params.map(&:last)
                  end
 
         method_parameters[method_name] = params
@@ -52,7 +52,6 @@ module SidekiqAdhocJob
 
         klass_method(method.super_method)
       end
-
     end
   end
 end

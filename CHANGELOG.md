@@ -1,4 +1,8 @@
 # Change Log
+## 2.4.0
+- Switch rspec to test for mutiple sidekiq version
+- Support both sidekiq 8 and 7
+
 ## 2.3.0
 - Add alert and prevent job run when user leaves optional params empty in between other non-empty optional params.
 

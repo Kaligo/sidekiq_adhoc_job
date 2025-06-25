@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'sidekiq'
 require 'sidekiq/web'
 
@@ -10,7 +12,6 @@ require 'sidekiq_adhoc_job/services/schedule_adhoc_job'
 require 'sidekiq_adhoc_job/web'
 
 module SidekiqAdhocJob
-
   StringUtil ||= Utils::String
 
   module Strategies
@@ -29,10 +30,20 @@ module SidekiqAdhocJob
   end
 
   def self.init
-    SidekiqAdhocJob::WorkerClassesLoader.load(@_config.module_names, load_paths: @_config.load_paths, strategy: @_config.strategy)
+    SidekiqAdhocJob::WorkerClassesLoader.load(@_config.module_names, load_paths: @_config.load_paths,
+                                                                     strategy: @_config.strategy)
 
-    Sidekiq::Web.register(SidekiqAdhocJob::Web)
-    Sidekiq::Web.tabs['adhoc_jobs'] = 'adhoc-jobs'
+    # Check if we're using Sidekiq 8+ which requires the new API
+    if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('8.0.0')
+      Sidekiq::Web.configure do |config|
+        config.register_extension(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
+      end
+    else
+      # Legacy API for Sidekiq 7.x
+      Sidekiq::Web.register(SidekiqAdhocJob::Web)
+      Sidekiq::Web.tabs['adhoc_jobs'] = 'adhoc-jobs'
+    end
+
     Sidekiq::Web.locales << File.expand_path('sidekiq_adhoc_job/web/locales', __dir__)
 
     assets_path = File.expand_path('sidekiq_adhoc_job/web/assets', __dir__)
@@ -41,11 +52,10 @@ module SidekiqAdhocJob
                                    root: assets_path,
                                    cascade: true,
                                    header_rules: [[:all, { 'cache-control' => 'private, max-age=86400' }]]
-
-end
+  end
 
   def self.strategies
-    @_strategies ||= []
+    @strategies ||= []
   end
 
   class Configuration
@@ -94,10 +104,10 @@ end
                       SidekiqAdhocJob::Strategies::Default.new(module_names)
                     else
                       strategy_klass = SidekiqAdhocJob::Strategies.const_get(StringUtil.camelize(strategy_name.to_s).to_s)
-                      raise InvalidConfigurationError, "Invalid strategy name" unless strategy_klass
+                      raise InvalidConfigurationError, 'Invalid strategy name' unless strategy_klass
+
                       strategy_klass.new(module_names)
                     end
     end
   end
-
 end
