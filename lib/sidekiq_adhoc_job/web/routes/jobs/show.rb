@@ -10,7 +10,7 @@ module SidekiqAdhocJob
 
             # Use Sidekiq 8's new API if available, fallback to legacy for Sidekiq 7
             name = if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('8.0.0')
-                     route_params[:name]
+                     route_params(:name)
                    else
                      params['name']
                    end
