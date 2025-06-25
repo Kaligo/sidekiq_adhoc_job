@@ -22,11 +22,66 @@ RSpec.describe 'GET /adhoc_jobs/:name' do
         )
       )
 
-      %w[id overwrite retry_job retries interval name options type dryrun].each do |field|
-        expect(response_body).to include('<input class="form-control"')
-        expect(response_body).to include("name=\"#{field}\"")
-        expect(response_body).to include("id=\"#{field}\"")
-      end
+      expect(response_body).to include(
+        compact_html(
+          <<~HTML
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="id">*id:</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="id" id="id" required/>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="overwrite">*overwrite:</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="overwrite" id="overwrite" required/>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="retry_job">retry_job:</label>
+              <div class="col-sm-4">
+                <input class="form-control optional" type="text" name="retry_job" id="retry_job"/>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="retries">retries:</label>
+              <div class="col-sm-4">
+                <input class="form-control optional" type="text" name="retries" id="retries"/>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="interval">interval:</label>
+              <div class="col-sm-4">
+                <input class="form-control optional" type="text" name="interval" id="interval"/>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="name">name:</label>
+              <div class="col-sm-4">
+                <input class="form-control optional" type="text" name="name" id="name"/>
+              </div>
+            </div>
+            <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="options">options:</label>
+              <div class="col-sm-4">
+                <input class="form-control optional" type="text" name="options" id="options"/>
+              </div>
+            </div>
+              <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="type">type:</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="type" id="type" required/>
+              </div>
+            </div>
+              <div class="form-group row">
+              <label class="col-sm-2 col-form-label" for="dryrun">dryrun:</label>
+              <div class="col-sm-4">
+                <input class="form-control" type="text" name="dryrun" id="dryrun"/>
+              </div>
+            </div>
+          HTML
+        )
+      )
     end
   end
 
