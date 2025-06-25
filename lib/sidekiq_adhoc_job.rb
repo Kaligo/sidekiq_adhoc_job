@@ -34,7 +34,7 @@ module SidekiqAdhocJob
                                                                      strategy: @_config.strategy)
 
     # Check if we're using Sidekiq 8+ which requires the new API
-    if Sidekiq::VERSION >= '8.0'
+    if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('8.0.0')
       Sidekiq::Web.configure do |config|
         config.register_extension(SidekiqAdhocJob::Web, name: 'Adhoc Jobs', tab: 'adhoc_jobs', index: 'adhoc-jobs')
       end

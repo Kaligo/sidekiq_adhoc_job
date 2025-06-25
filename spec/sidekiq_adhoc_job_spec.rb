@@ -90,7 +90,7 @@ RSpec.describe SidekiqAdhocJob do
 
       it 'loads worker files and adds web extension' do
         # Expect different behavior based on Sidekiq version
-        if Sidekiq::VERSION >= '8.0'
+        if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('8.0.0')
           expect(Sidekiq::Web).to receive(:configure)
         else
           expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
@@ -130,7 +130,7 @@ RSpec.describe SidekiqAdhocJob do
 
       it 'loads worker files and adds web extension' do
         # Expect different behavior based on Sidekiq version
-        if Sidekiq::VERSION >= '8.0'
+        if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('8.0.0')
           expect(Sidekiq::Web).to receive(:configure)
         else
           expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
@@ -152,7 +152,7 @@ RSpec.describe SidekiqAdhocJob do
 
       it 'loads worker files and adds web extension' do
         # Expect different behavior based on Sidekiq version
-        if Sidekiq::VERSION >= '8.0'
+        if Gem::Version.new(Sidekiq::VERSION) >= Gem::Version.new('8.0.0')
           expect(Sidekiq::Web).to receive(:configure)
         else
           expect(Sidekiq::Web).to receive(:register).with(SidekiqAdhocJob::Web)
