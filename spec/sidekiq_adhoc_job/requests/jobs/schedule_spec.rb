@@ -35,7 +35,7 @@ RSpec.describe 'GET /adhoc_jobs/:name' do
     disable_csrf
     allow(SidekiqAdhocJob::ScheduleAdhocJob)
       .to receive(:new)
-      .with('sidekiq_adhoc_job_test_dummy_worker', hash_including(schedule_job_params))
+      .with('sidekiq_adhoc_job_test_dummy_worker', schedule_job_params)
       .and_return(fake_schedule_job)
   end
 
