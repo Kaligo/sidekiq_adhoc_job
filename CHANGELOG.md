@@ -1,4 +1,8 @@
 # Change Log
+
+## 2.4.1
+- Fix crash when worker does not define #perform method
+
 ## 2.4.0
 - Switch rspec to test for mutiple sidekiq version
 - Support both sidekiq 8 and 7
